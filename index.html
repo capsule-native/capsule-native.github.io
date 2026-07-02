@@ -3,88 +3,79 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Capsule — a native macOS app for Apple's container CLI</title>
-  <meta name="description" content="Capsule is a native macOS app for Apple's container CLI: manage containers, images, volumes, networks and machines with an embedded terminal and signed auto-updates." />
+  <title>Capsule — an open-source Mac app for Apple's container CLI</title>
+  <meta name="description" content="Capsule is an open-source, native macOS app for Apple's container CLI: browse and manage containers, images, volumes, networks and machines with an embedded terminal and a command palette." />
+  <link rel="icon" href="assets/capsule-icon-256.png" />
   <meta property="og:title" content="Capsule" />
-  <meta property="og:description" content="A native macOS app for Apple's container CLI." />
+  <meta property="og:description" content="An open-source, native macOS app for Apple's container CLI." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://capsule-native.github.io/" />
+  <meta property="og:image" content="https://capsule-native.github.io/assets/app-screenshot.png" />
   <style>
     :root {
       --bg:        #070b14;
       --text:      #eaf0fb;
       --muted:     #93a1bd;
-      --accent:    #0a84ff;   /* macOS system blue (dark) */
+      --accent:    #0a84ff;
       --accent-hi: #4a9bff;
-      --cyan:      #64d2ff;   /* macOS cyan (dark)        */
+      --cyan:      #64d2ff;
       --glass:     rgba(255,255,255,.055);
       --glass-brd: rgba(255,255,255,.11);
       --glass-hi:  rgba(255,255,255,.20);
-      --radius:    18px;
       --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
       --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      -webkit-font-smoothing: antialiased;
-      line-height: 1.6;
-      overflow-x: hidden;
+      background: var(--bg); color: var(--text); font-family: var(--sans);
+      -webkit-font-smoothing: antialiased; line-height: 1.6; overflow-x: hidden;
     }
-    /* Ambient blue field the glass blurs over */
     .field { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
-    .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .55; }
-    .b1 { width: 60vw; height: 60vw; left: -12vw; top: -18vw;
-          background: radial-gradient(circle at 30% 30%, #1b6dff, transparent 62%); }
-    .b2 { width: 46vw; height: 46vw; right: -10vw; top: 6vh;
-          background: radial-gradient(circle at 60% 40%, #0a84ff, transparent 60%); opacity: .45; }
-    .b3 { width: 50vw; height: 50vw; left: 22vw; bottom: -26vw;
-          background: radial-gradient(circle at 50% 50%, #34d0ff, transparent 60%); opacity: .30; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(60px); }
+    .b1 { width: 62vw; height: 62vw; left: -14vw; top: -20vw;
+          background: radial-gradient(circle at 30% 30%, #1b6dff, transparent 62%); opacity: .55; }
+    .b2 { width: 46vw; height: 46vw; right: -10vw; top: 4vh;
+          background: radial-gradient(circle at 60% 40%, #0a84ff, transparent 60%); opacity: .42; }
+    .b3 { width: 52vw; height: 52vw; left: 26vw; top: 44vh;
+          background: radial-gradient(circle at 50% 50%, #34d0ff, transparent 60%); opacity: .26; }
     .grain { position: fixed; inset: 0; z-index: 1; pointer-events: none;
-      background-image: radial-gradient(rgba(255,255,255,.028) 1px, transparent 1px);
-      background-size: 3px 3px; }
+      background-image: radial-gradient(rgba(255,255,255,.028) 1px, transparent 1px); background-size: 3px 3px; }
     @media (prefers-reduced-motion: no-preference) {
-      .b1 { animation: drift 22s ease-in-out infinite alternate; }
-      .b2 { animation: drift 28s ease-in-out infinite alternate-reverse; }
-      .b3 { animation: drift 34s ease-in-out infinite alternate; }
-      @keyframes drift { to { transform: translate3d(4vw, 3vh, 0) scale(1.08); } }
+      .b1 { animation: drift 24s ease-in-out infinite alternate; }
+      .b2 { animation: drift 30s ease-in-out infinite alternate-reverse; }
+      @keyframes drift { to { transform: translate3d(3vw, 3vh, 0) scale(1.07); } }
     }
 
-    .shell { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 0 22px; }
+    .shell { position: relative; z-index: 2; max-width: 1040px; margin: 0 auto; padding: 0 22px; }
 
-    /* Floating glass nav */
     nav {
       position: sticky; top: 14px; z-index: 5;
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      margin-top: 14px; padding: 10px 12px 10px 16px;
-      background: var(--glass); border: 1px solid var(--glass-brd);
-      border-radius: 14px; backdrop-filter: blur(24px) saturate(160%);
-      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      margin-top: 14px; padding: 9px 12px 9px 14px;
+      background: var(--glass); border: 1px solid var(--glass-brd); border-radius: 14px;
+      backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%);
       box-shadow: inset 0 1px 0 var(--glass-hi), 0 12px 40px rgba(0,0,0,.35);
     }
-    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 640; letter-spacing: -.01em; }
-    .logo { width: 28px; height: 28px; border-radius: 8px;
-      background: linear-gradient(155deg, var(--accent-hi), #0761d8 70%);
-      box-shadow: 0 4px 16px rgba(10,132,255,.5), inset 0 1px 0 rgba(255,255,255,.45);
-      display: grid; place-items: center; }
-    .logo::after { content: ""; width: 11px; height: 11px; border-radius: 3.5px;
-      background: rgba(255,255,255,.92); box-shadow: 0 0 10px rgba(255,255,255,.5); }
-    nav .links { display: flex; gap: 4px; }
-    nav a { color: var(--muted); text-decoration: none; font-size: 14px; padding: 8px 12px; border-radius: 9px; }
-    nav a:hover { color: var(--text); background: rgba(255,255,255,.06); }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: -.01em; }
+    .brand img { width: 28px; height: 28px; border-radius: 7px; box-shadow: 0 3px 12px rgba(10,90,220,.5); }
+    .gh { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none;
+      font-size: 14px; padding: 8px 13px; border-radius: 10px; border: 1px solid transparent; }
+    .gh:hover { color: var(--text); background: rgba(255,255,255,.06); }
+    .gh svg { width: 17px; height: 17px; }
 
-    /* Hero */
-    .hero { padding: 76px 0 22px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; }
-    .eyebrow { font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
-    h1 { font-size: clamp(34px, 5.2vw, 56px); line-height: 1.04; letter-spacing: -.035em; font-weight: 720; margin: 16px 0 0; }
-    h1 .accent { background: linear-gradient(100deg, var(--accent-hi), var(--cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .lede { color: var(--muted); font-size: 18.5px; margin: 20px 0 0; max-width: 34em; }
-    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-    .btn { display: inline-flex; align-items: center; gap: 9px; padding: 12px 20px; border-radius: 12px;
-      font-weight: 600; font-size: 15px; text-decoration: none; border: 1px solid transparent; transition: transform .06s, filter .15s, background .15s; }
+    .hero { text-align: center; padding: 70px 0 6px; }
+    .eyebrow { font-family: var(--mono); font-size: 12.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--cyan); }
+    h1 { font-size: clamp(34px, 5.6vw, 58px); line-height: 1.05; letter-spacing: -.035em; font-weight: 720;
+      margin: 16px auto 0; max-width: 15ch; }
+    h1 .accent { background: linear-gradient(100deg, var(--accent-hi), var(--cyan));
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    h1 code { font-family: var(--mono); font-size: .82em; font-weight: 640; }
+    .lede { color: var(--muted); font-size: 18.5px; margin: 22px auto 0; max-width: 52ch; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 30px; }
+    .btn { display: inline-flex; align-items: center; gap: 9px; padding: 12px 22px; border-radius: 12px;
+      font-weight: 600; font-size: 15px; text-decoration: none; border: 1px solid transparent;
+      transition: transform .06s, filter .15s, background .15s; }
     .btn:active { transform: translateY(1px); }
     .btn-primary { color: #eaf4ff; background: linear-gradient(180deg, var(--accent-hi), var(--accent));
       box-shadow: 0 8px 26px rgba(10,132,255,.45), inset 0 1px 0 rgba(255,255,255,.35); }
@@ -94,45 +85,23 @@
       box-shadow: inset 0 1px 0 var(--glass-hi); }
     .btn-glass:hover { background: rgba(255,255,255,.09); }
     .meta { margin-top: 15px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
-    .meta b { color: var(--text); font-weight: 600; }
 
-    /* Signature: frosted macOS app window */
-    .window { position: relative; border-radius: var(--radius); overflow: hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
-      border: 1px solid var(--glass-brd);
-      backdrop-filter: blur(34px) saturate(170%); -webkit-backdrop-filter: blur(34px) saturate(170%);
-      box-shadow: inset 0 1px 0 var(--glass-hi), 0 30px 80px rgba(3,10,30,.6); }
-    .titlebar { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
-    .dot { width: 12px; height: 12px; border-radius: 50%; }
-    .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
-    .titlebar .t { margin-left: 8px; font-size: 12.5px; color: var(--muted); }
-    .body { display: grid; grid-template-columns: 132px 1fr; min-height: 268px; }
-    .side { padding: 12px 10px; border-right: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.02); }
-    .side .h { font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; }
-    .side .item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 8px; font-size: 13px; color: #c7d2e6; }
-    .side .item.sel { background: linear-gradient(180deg, var(--accent-hi), var(--accent)); color: #fff;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 6px 16px rgba(10,132,255,.4); }
-    .side .ic { width: 13px; height: 13px; border-radius: 3px; background: currentColor; opacity: .8; }
-    .content { padding: 14px 16px; }
-    .row { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 11px;
-      padding: 10px 10px; border-radius: 10px; font-size: 13px; }
-    .row + .row { margin-top: 4px; }
-    .row:nth-child(odd) { background: rgba(255,255,255,.03); }
-    .st { width: 8px; height: 8px; border-radius: 50%; }
-    .st.run { background: #28c840; box-shadow: 0 0 9px rgba(40,200,64,.7); }
-    .st.stop { background: #6b7890; }
-    .row .name { font-weight: 560; }
-    .row .img { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
-    .badge { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.12); }
+    /* Real app screenshot, framed as a floating window */
+    .shot { position: relative; margin: 50px auto 0; max-width: 1000px; }
+    .shot::before { content: ""; position: absolute; inset: -6% 6% 12%; z-index: -1; border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(10,132,255,.5), transparent 72%); filter: blur(46px); }
+    .shot img { display: block; width: 100%; height: auto; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 40px 100px rgba(3,10,30,.7), inset 0 1px 0 rgba(255,255,255,.12); }
 
-    /* Features */
-    .features { padding: 56px 0 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .features { padding: 64px 0 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
     .card { padding: 20px; border-radius: 15px; background: var(--glass); border: 1px solid var(--glass-brd);
       backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%);
       box-shadow: inset 0 1px 0 var(--glass-hi); }
-    .card .k { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; margin-bottom: 13px;
-      background: linear-gradient(155deg, rgba(74,155,255,.35), rgba(10,132,255,.15)); border: 1px solid rgba(120,180,255,.3); }
-    .card .k::after { content:""; width:12px; height:12px; border-radius:3px; background: var(--accent-hi); box-shadow: 0 0 10px rgba(10,132,255,.6);}
+    .card .k { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; margin-bottom: 14px;
+      color: var(--accent-hi); background: linear-gradient(155deg, rgba(74,155,255,.28), rgba(10,132,255,.10));
+      border: 1px solid rgba(120,180,255,.28); }
+    .card .k svg { width: 18px; height: 18px; }
     .card h3 { margin: 0 0 6px; font-size: 15px; letter-spacing: -.01em; }
     .card p { margin: 0; color: var(--muted); font-size: 13.5px; }
 
@@ -144,12 +113,11 @@
 
     a:focus-visible, .btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 10px; }
 
-    @media (max-width: 880px) {
-      .hero { grid-template-columns: 1fr; gap: 30px; padding-top: 52px; }
+    @media (max-width: 760px) {
       .features { grid-template-columns: repeat(2, 1fr); }
-      nav .links a:not(.gh) { display: none; }
+      .brand span { display: none; }
     }
-    @media (max-width: 480px) { .features { grid-template-columns: 1fr; } }
+    @media (max-width: 460px) { .features { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -158,64 +126,56 @@
 
   <div class="shell">
     <nav>
-      <span class="brand"><span class="logo"></span> Capsule</span>
-      <span class="links">
-        <a href="#features">Features</a>
-        <a href="https://capsule-native.github.io/appcast.xml">Releases</a>
-        <a class="gh" href="https://github.com/capsule-native/capsule">GitHub ↗</a>
-      </span>
+      <span class="brand"><img src="assets/capsule-icon-256.png" alt="" /> <span>Capsule</span></span>
+      <a class="gh" href="https://github.com/capsule-native/capsule">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.96 0-1.32.47-2.39 1.24-3.23-.12-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0C17.99 4.7 19 5.02 19 5.02c.66 1.65.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.23 0 4.63-2.81 5.65-5.49 5.95.43.37.81 1.1.81 2.22 0 1.61-.01 2.9-.01 3.29 0 .32.22.7.83.58C20.57 22.29 24 17.8 24 12.5 24 5.87 18.63.5 12 .5z"/></svg>
+        GitHub
+      </a>
     </nav>
 
     <header class="hero">
-      <div>
-        <div class="eyebrow">Native macOS · Apple silicon</div>
-        <h1>A native home for Apple's <span class="accent">container</span> CLI.</h1>
-        <p class="lede">
-          Run and manage containers, images, volumes, networks and machines in a real macOS
-          window — live tables, an embedded terminal, and signed updates that install themselves.
-        </p>
-        <div class="cta">
-          <a class="btn btn-primary" href="https://github.com/capsule-native/capsule/releases/latest">Download for macOS</a>
-          <a class="btn btn-glass" href="https://github.com/capsule-native/capsule">View source</a>
-        </div>
-        <p class="meta">Developer-ID signed &amp; notarized · <b>free &amp; open source</b></p>
+      <div class="eyebrow">Open source · Native macOS · Apple silicon</div>
+      <h1>An <span class="accent">open-source</span> Mac app for Apple's <code>container</code> CLI.</h1>
+      <p class="lede">
+        Browse and manage containers, images, volumes, networks and machines in a real macOS
+        window — with an embedded terminal and a command palette for everything else.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/capsule-native/capsule/releases/latest">Download for macOS</a>
+        <a class="btn btn-glass" href="https://github.com/capsule-native/capsule">View source</a>
       </div>
-
-      <!-- Signature: a frosted app window echoing Capsule itself -->
-      <div class="window" role="img" aria-label="Capsule app window showing the Containers list">
-        <div class="titlebar">
-          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <span class="t">Capsule — Containers</span>
-        </div>
-        <div class="body">
-          <aside class="side">
-            <div class="h">Resources</div>
-            <div class="item sel"><span class="ic"></span> Containers</div>
-            <div class="item"><span class="ic"></span> Images</div>
-            <div class="item"><span class="ic"></span> Volumes</div>
-            <div class="item"><span class="ic"></span> Networks</div>
-            <div class="item"><span class="ic"></span> Machines</div>
-            <div class="item"><span class="ic"></span> System</div>
-          </aside>
-          <section class="content">
-            <div class="row"><span class="st run"></span><span><div class="name">web</div><div class="img">nginx:1.27</div></span><span class="badge">running</span></div>
-            <div class="row"><span class="st run"></span><span><div class="name">api</div><div class="img">ghcr.io/app:2.3</div></span><span class="badge">running</span></div>
-            <div class="row"><span class="st stop"></span><span><div class="name">db</div><div class="img">postgres:16</div></span><span class="badge">stopped</span></div>
-            <div class="row"><span class="st run"></span><span><div class="name">cache</div><div class="img">redis:7</div></span><span class="badge">running</span></div>
-          </section>
-        </div>
-      </div>
+      <p class="meta">Free &amp; open source · no accounts, no telemetry</p>
     </header>
 
-    <section class="features" id="features">
-      <div class="card"><div class="k"></div><h3>Everything, live</h3><p>Containers, images, volumes, networks and machines — searchable, inspectable, updating in real time.</p></div>
-      <div class="card"><div class="k"></div><h3>Embedded terminal</h3><p>Exec into a container or open a shell without leaving the window.</p></div>
-      <div class="card"><div class="k"></div><h3>Command palette</h3><p>⌘K for anything, with a faithful preview of the exact command being run.</p></div>
-      <div class="card"><div class="k"></div><h3>Stays current</h3><p>Signed background updates over Sparkle — on by default, off whenever you like.</p></div>
+    <div class="shot">
+      <img src="assets/app-screenshot.png" alt="Capsule showing the Containers list with a sidebar for Images, Volumes, Networks, Machines and System, and an inspector panel" />
+    </div>
+
+    <section class="features">
+      <div class="card">
+        <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg></div>
+        <h3>Everything, live</h3>
+        <p>Containers, images, volumes, networks and machines — searchable, inspectable, updating in real time.</p>
+      </div>
+      <div class="card">
+        <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></div>
+        <h3>Embedded terminal</h3>
+        <p>Exec into a container or open a shell without ever leaving the window.</p>
+      </div>
+      <div class="card">
+        <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 10l2 2-2 2"/></svg></div>
+        <h3>Command palette</h3>
+        <p>⌘K for anything, with a faithful preview of the exact <code>container</code> command being run.</p>
+      </div>
+      <div class="card">
+        <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></div>
+        <h3>Scriptable</h3>
+        <p>Drive it from Shortcuts, AppleScript or an App Intent — every action is automatable.</p>
+      </div>
     </section>
 
     <footer>
-      <span>© 2026 Capsule · a native macOS app for Apple's <code>container</code> CLI</span>
+      <span>© 2026 Capsule · an open-source app for Apple's <code>container</code> CLI</span>
       <span>
         <a href="https://github.com/capsule-native/capsule">GitHub</a> ·
         <a href="https://capsule-native.github.io/appcast.xml">appcast</a>
