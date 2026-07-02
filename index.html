@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Capsule — a native macOS app for Apple's container CLI</title>
+  <meta name="description" content="Capsule is a native macOS app for managing containers, images, volumes, networks and machines through Apple's container CLI." />
+  <meta property="og:title" content="Capsule" />
+  <meta property="og:description" content="A native macOS app for Apple's container CLI." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://capsule-native.github.io/" />
+  <style>
+    :root {
+      --bg: #0e1512;
+      --bg-elev: #16201b;
+      --fg: #e8efe9;
+      --muted: #8ba090;
+      --accent: #34c759;
+      --accent-press: #2ba64c;
+      --border: #24332b;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background:
+        radial-gradient(1100px 620px at 50% -12%, rgba(52,199,89,.14), transparent 60%),
+        var(--bg);
+      color: var(--fg);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 88px 24px 64px; }
+    .mark {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-weight: 680; letter-spacing: -.02em; font-size: 20px;
+    }
+    .dot {
+      width: 30px; height: 30px; border-radius: 9px;
+      background: linear-gradient(150deg, var(--accent), #1f9d47);
+      box-shadow: 0 6px 20px rgba(52,199,89,.35);
+      display: grid; place-items: center;
+    }
+    .dot::after { content: ""; width: 12px; height: 12px; border-radius: 4px; background: #0e1512; }
+    h1 {
+      font-size: clamp(38px, 7vw, 60px);
+      line-height: 1.05; letter-spacing: -.03em; margin: 40px 0 0;
+    }
+    h1 .g { color: var(--accent); }
+    .lede { font-size: 20px; color: var(--muted); margin: 20px 0 0; max-width: 34em; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 36px 0 0; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 20px; border-radius: 11px; font-weight: 620; text-decoration: none;
+      border: 1px solid transparent; transition: background .15s, border-color .15s, transform .05s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--accent); color: #06120a; }
+    .btn-primary:hover { background: var(--accent-press); }
+    .btn-ghost { border-color: var(--border); color: var(--fg); background: var(--bg-elev); }
+    .btn-ghost:hover { border-color: #375a45; }
+    .note { margin-top: 14px; font-size: 13.5px; color: var(--muted); }
+    .grid { margin: 56px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+    }
+    .card h3 { margin: 0 0 6px; font-size: 15px; letter-spacing: -.01em; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+    footer {
+      margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 13.5px;
+      display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between;
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--fg); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="mark"><span class="dot"></span> Capsule</div>
+
+    <h1>The native way to run <span class="g">containers</span> on your Mac.</h1>
+    <p class="lede">
+      A macOS app for Apple's <code>container</code> CLI — browse and control containers, images,
+      volumes, networks and machines, with an embedded terminal and one-click updates.
+    </p>
+
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/capsule-native/capsule/releases/latest">Download for macOS</a>
+      <a class="btn btn-ghost" href="https://github.com/capsule-native/capsule">View on GitHub</a>
+    </div>
+    <p class="note">Developer-ID signed &amp; notarized · Apple silicon · auto-updates via Sparkle.</p>
+
+    <div class="grid">
+      <div class="card"><h3>Everything in one place</h3><p>Containers, images, volumes, networks and machines — live, searchable, inspectable.</p></div>
+      <div class="card"><h3>Embedded terminal</h3><p>Exec into a container or open a shell without leaving the app.</p></div>
+      <div class="card"><h3>Command palette</h3><p>⌘K for anything, with a faithful preview of the exact command being run.</p></div>
+      <div class="card"><h3>Stays current</h3><p>Signed, automatic background updates you can turn off anytime.</p></div>
+    </div>
+
+    <footer>
+      <span>© 2026 Capsule</span>
+      <span>
+        <a href="https://github.com/capsule-native/capsule">GitHub</a> ·
+        <a href="https://capsule-native.github.io/appcast.xml">appcast</a>
+      </span>
+    </footer>
+  </main>
+</body>
+</html>

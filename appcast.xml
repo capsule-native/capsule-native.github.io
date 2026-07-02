@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Capsule</title>
+    <link>https://capsule-native.github.io/appcast.xml</link>
+    <description>Most recent updates for Capsule.</description>
+    <language>en</language>
+    <!-- No releases yet. The release pipeline in capsule-native/capsule generates the signed
+         entries; the Sync appcast workflow in this repo replaces this file with the latest one. -->
+  </channel>
+</rss>
