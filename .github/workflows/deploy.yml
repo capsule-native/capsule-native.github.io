@@ -1,0 +1,52 @@
+name: Deploy Pages
+
+# Self-managed GitHub Pages deploy (Pages source = "GitHub Actions"). We control the action
+# versions — all on Node 24 — so there's no Node-20 deprecation warning from the built-in
+# builder, and we own the deploy step (which the managed one intermittently timed out on).
+#
+# It also publishes the Sparkle appcast: the signed appcast.xml is fetched from the latest
+# Capsule release at deploy time and shipped with the site (no git commit needed). The schedule
+# keeps the feed fresh even without a push; every push redeploys immediately.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel an in-progress deploy; let each finish so the site is always consistent.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Pull latest signed appcast from the Capsule release
+        run: |
+          url="https://github.com/capsule-native/capsule/releases/latest/download/appcast.xml"
+          if curl -fsSL "$url" -o appcast.xml; then
+            echo "appcast.xml updated from the latest release."
+          else
+            echo "No published appcast on the latest release yet — shipping the placeholder."
+          fi
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v5
