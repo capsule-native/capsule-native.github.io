@@ -10,7 +10,7 @@
   <meta property="og:description" content="An open-source, native macOS app for Apple's container CLI." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://capsule-native.github.io/" />
-  <meta property="og:image" content="https://capsule-native.github.io/assets/app-screenshot.png" />
+  <meta property="og:image" content="https://capsule-native.github.io/assets/ss2.png" />
   <style>
     :root {
       --bg:        #070b14;
@@ -86,13 +86,18 @@
     .btn-glass:hover { background: rgba(255,255,255,.09); }
     .meta { margin-top: 15px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
 
-    /* Real app screenshot, framed as a floating window */
-    .shot { position: relative; margin: 50px auto 0; max-width: 1000px; }
-    .shot::before { content: ""; position: absolute; inset: -6% 6% 12%; z-index: -1; border-radius: 50%;
-      background: radial-gradient(closest-side, rgba(10,132,255,.5), transparent 72%); filter: blur(46px); }
-    .shot img { display: block; width: 100%; height: auto; border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 40px 100px rgba(3,10,30,.7), inset 0 1px 0 rgba(255,255,255,.12); }
+    /* Real app screenshots, each a floating macOS window (drop-shadow follows the alpha silhouette) */
+    .gallery { padding: 52px 0 6px; display: flex; flex-direction: column; gap: 30px; }
+    .gallery figure { margin: 0; }
+    .gallery img { display: block; width: 100%; height: auto;
+      filter: drop-shadow(0 26px 52px rgba(2,8,26,.6)); }
+    .gallery figcaption { margin-top: 13px; text-align: center; font-family: var(--mono);
+      font-size: 12.5px; letter-spacing: .02em; color: var(--muted); }
+    .gallery .feat { position: relative; }
+    .gallery .feat::before { content: ""; position: absolute; inset: -3% 12% 16%; z-index: -1; border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(10,132,255,.42), transparent 72%); filter: blur(52px); }
+    .grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 26px; }
+    @media (max-width: 760px) { .grid4 { grid-template-columns: 1fr; } }
 
     .features { padding: 64px 0 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
     .card { padding: 20px; border-radius: 15px; background: var(--glass); border: 1px solid var(--glass-brd);
@@ -147,9 +152,36 @@
       <p class="meta">Free &amp; open source · no accounts, no telemetry</p>
     </header>
 
-    <div class="shot">
-      <img src="assets/app-screenshot.png" alt="Capsule showing the Containers list with a sidebar for Images, Volumes, Networks, Machines and System, and an inspector panel" />
-    </div>
+    <section class="gallery" aria-label="Screenshots">
+      <figure class="feat">
+        <img src="assets/ss2.png" alt="Capsule with the embedded terminal running apk update inside a container while the inspector shows live CPU, memory, network and block-I/O metrics" />
+        <figcaption>Embedded terminal, with live CPU / memory / network metrics</figcaption>
+      </figure>
+
+      <div class="grid4">
+        <figure>
+          <img src="assets/ss3.png" alt="The Pull Image sheet browsing Docker Hub for nginx, listing official and community images with stars and pull counts" />
+          <figcaption>Browse &amp; pull straight from Docker Hub</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/ss4.png" alt="The Create Machine sheet showing options and a live container-machine command preview" />
+          <figcaption>Create Linux machines — see the exact command first</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/ss5.png" alt="The Registry Login sheet with a command preview using container registry login --password-stdin" />
+          <figcaption>Registry login — password over stdin, never argv</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/ss1.png" alt="The Containers list with the inspector summarizing a running container's name, image, state, IP and creation date" />
+          <figcaption>A live inspector for every container</figcaption>
+        </figure>
+      </div>
+
+      <figure class="feat">
+        <img src="assets/ss6.png" alt="The System Storage dashboard showing reclaimable space for images, containers and volumes side by side" />
+        <figcaption>See what you can reclaim — and reclaim it in a click</figcaption>
+      </figure>
+    </section>
 
     <section class="features">
       <div class="card">
